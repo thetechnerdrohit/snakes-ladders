@@ -44,7 +44,8 @@ export const getPlayer = () => {
             status: 0,
             imgClass: "P1",
             start: false,
-            color: 'purple'
+            color: 'text-yellow-500 bg-yellow-200 border-yellow-500',
+            colorName: 'bg-yellow-500'
         }
     ];
 }

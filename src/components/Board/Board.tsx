@@ -20,9 +20,9 @@ const Board = () => {
     const snake = snakes.slice();
     let found = snake.find((k, j) => {
       if (k.head === i) {
+        console.log({ i, k });
         return k;
       }
-      return undefined;
     });
     return found;
   };
@@ -31,9 +31,9 @@ const Board = () => {
     const ladder = ladders.slice();
     let found = ladder.find((k, j) => {
       if (k.from === i) {
+        console.log({ i, k });
         return k;
       }
-      return undefined;
     });
     return found;
   };
@@ -44,7 +44,6 @@ const Board = () => {
       if (k.status === i) {
         return k;
       }
-      return undefined;
     });
     return found;
   };
@@ -98,21 +97,18 @@ const Board = () => {
       setDiceNumber((prev: any) => rand);
       setPlayers((prev) => player);
       return;
-    } else if (player[whosTurn].status > 94) {
+    } else if (player[whosTurn].status >= 94) {
       const sum = player[whosTurn].status + rand;
-      if (sum > 100) {
-        setDiceNumber(rand);
-        setPlayers(player);
-        return;
-      } else if (sum === 100) {
+      if (rand <= 100 - player[whosTurn].status) {
         player[whosTurn].status = sum;
         setDiceNumber(rand);
         setPlayers(player);
-        setGameOver(true);
-        // toast.success("Game Over " + player[turn].name + " Won", {
-        //   position: toast.POSITION.BOTTOM_CENTER,
-        // });
-        return;
+        if (sum === 100) {
+          player[whosTurn].status = 0;
+          setPlayers(player);
+          setGameOver((prev) => !prev);
+          return;
+        }
       }
     } else {
       player[whosTurn].status += rand;
@@ -162,9 +158,29 @@ const Board = () => {
           cheatValue={Math.floor(1 + Math.random() * (7 - 1)) as any}
         />
       </div>
-      <ul>
+      <ul role="list">
         <li>Get 6 to start</li>
+        <li>
+          <b>Hover</b> on different <b className="text-green-500">green</b>
+          &nbsp;&&nbsp;
+          <b className="text-rose-500">red</b> color box 😍
+        </li>
+        <li className="flex items-center justify-center">
+          Player {turn} has &nbsp;
+          <div
+            className={`h-4 w-4 rounded-full ${players[turn].colorName}`}
+          ></div>
+          &nbsp; color
+          {/* {players[turn].colorName} */}
+        </li>
       </ul>
+      {gameOver && (
+        <div className="dv-gameover flex">
+          <h1 className="animate-text bg-gradient-to-r from-teal-500 via-pink-500 to-rose-500 bg-clip-text text-transparent text-5xl font-black">
+            Winner winner chicken dinner🎉🎉
+          </h1>
+        </div>
+      )}
     </div>
   );
 };
