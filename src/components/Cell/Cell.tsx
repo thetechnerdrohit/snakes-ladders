@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import classnames from "classnames";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 

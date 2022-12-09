@@ -14,13 +14,13 @@ const Board = () => {
   const [gameOver, setGameOver] = useState(false);
   const [start, setStart] = useState(false);
   const [boardHtml, setBoardHtml] = useState<any>([]);
+  const [logs, setLogs] = useState<string[]>([]);
 
   //Check snake
   const checkSnake = (i: number) => {
     const snake = snakes.slice();
     let found = snake.find((k, j) => {
       if (k.head === i) {
-        console.log({ i, k });
         return k;
       }
     });
@@ -31,7 +31,6 @@ const Board = () => {
     const ladder = ladders.slice();
     let found = ladder.find((k, j) => {
       if (k.from === i) {
-        console.log({ i, k });
         return k;
       }
     });
@@ -100,7 +99,12 @@ const Board = () => {
       return;
     } else if (player[whosTurn].status >= 94) {
       const sum = player[whosTurn].status + rand;
-      if (rand <= 100 - player[whosTurn].status) {
+      const remainingBlocks = 100 - player[whosTurn].status;
+      if (remainingBlocks === 1) {
+        setGameOver((prev) => !prev);
+        return;
+      }
+      if (rand <= remainingBlocks) {
         player[whosTurn].status = sum;
         setDiceNumber(rand);
         setPlayers(player);
@@ -118,11 +122,19 @@ const Board = () => {
       const snakeFound = checkSnake(status);
       if (snakeFound !== undefined) {
         player[whosTurn].status = snakeFound.tail;
+        setLogs((prev: any) => [
+          ...prev,
+          `Got a snake and demoted to ${snakeFound.tail} from ${snakeFound.head} 🥲`,
+        ]);
       }
       // Ladder Check
       const ladderFound = checkLadder(status);
       if (ladderFound !== undefined) {
         player[whosTurn].status = ladderFound.to;
+        setLogs((prev: any) => [
+          ...prev,
+          `Wow got a ladder and promoted from ${snakeFound.tail} to ${snakeFound.head} 😃`,
+        ]);
       }
       setPlayers((prev: any) => player);
     }
@@ -150,34 +162,63 @@ const Board = () => {
         </div>
       </div>
       <div className="col-span-1 flex items-center justify-center">
-        <Dice
-          size={150}
-          rollingTime={1000}
-          onRoll={(value) => onRollDiceClick(value)}
-          disabled={gameOver}
-          defaultValue={1}
-          cheatValue={(Math.floor(1 + (Math.random() * 6) / 2) * 2) as any}
-        />
+        <div className="flex justify-center space-x-4">
+          <Dice
+            size={150}
+            rollingTime={1000}
+            onRoll={(value) => onRollDiceClick(value)}
+            disabled={gameOver}
+            defaultValue={1}
+            cheatValue={(Math.floor(1 + (Math.random() * 6) / 2) * 2) as any}
+          />
+          <ul className="list-disc list-inside">
+            <li>Crooked Dice - A dice that only throws Even numbers.</li>
+            <li>Get 6 to start</li>
+            <li>
+              <b>Hover</b> on different <b className="text-green-500">green</b>
+              &nbsp;&&nbsp;
+              <b className="text-rose-500">red</b> color box 😍
+            </li>
+            <li className="flex items-center">
+              Player {turn} has &nbsp;
+              <div
+                className={`h-4 w-4 rounded-full ${players[turn].colorName}`}
+              ></div>
+              &nbsp; color
+            </li>
+          </ul>
+        </div>
       </div>
-      <ul role="list">
-        <li>Get 6 to start</li>
-        <li>
-          <b>Hover</b> on different <b className="text-green-500">green</b>
-          &nbsp;&&nbsp;
-          <b className="text-rose-500">red</b> color box 😍
-        </li>
-        <li className="flex items-center justify-center">
-          Player {turn} has &nbsp;
-          <div
-            className={`h-4 w-4 rounded-full ${players[turn].colorName}`}
-          ></div>
-          &nbsp; color
-        </li>
-      </ul>
+      <div className="col-span-1 flex items-center justify-center">
+        <ul className="list-disc">
+          <li>Current value of dice - {diceNumber} </li>
+          <li>
+            Players
+            <ul className="list-disc list-inside">
+              {players.map((player) => (
+                <li>
+                  {player.name} is at {player.status}
+                </li>
+              ))}
+            </ul>
+          </li>
+          <li>GameOver - {gameOver ? "Yes" : "Not yet"}</li>
+          <li>
+            Logs -
+            <ul className="list-disc list-inside">
+              {logs.map((log) => (
+                <li>{log}</li>
+              ))}
+            </ul>
+          </li>
+        </ul>
+      </div>
       {gameOver && (
         <div className="dv-gameover flex">
           <h1 className="animate-text bg-gradient-to-r from-teal-500 via-pink-500 to-rose-500 bg-clip-text text-transparent text-5xl font-black">
-            Winner winner chicken dinner🎉🎉
+            {players[turn].status === 99
+              ? "Draw, refresh to start again"
+              : "Winner winner chicken dinner🎉🎉"}
           </h1>
         </div>
       )}
