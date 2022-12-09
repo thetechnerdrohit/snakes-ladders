@@ -81,6 +81,7 @@ const Board = () => {
     setTurn((prev) => next);
     return next;
   };
+
   const onRollDiceClick = (rand: number) => {
     setStart(true);
 
@@ -155,7 +156,7 @@ const Board = () => {
           onRoll={(value) => onRollDiceClick(value)}
           disabled={gameOver}
           defaultValue={1}
-          cheatValue={Math.floor(1 + Math.random() * (7 - 1)) as any}
+          cheatValue={(Math.floor(1 + (Math.random() * 6) / 2) * 2) as any}
         />
       </div>
       <ul role="list">
@@ -171,7 +172,6 @@ const Board = () => {
             className={`h-4 w-4 rounded-full ${players[turn].colorName}`}
           ></div>
           &nbsp; color
-          {/* {players[turn].colorName} */}
         </li>
       </ul>
       {gameOver && (
