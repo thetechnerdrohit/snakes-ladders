@@ -104,7 +104,7 @@ const Board = () => {
         setDiceNumber(rand);
         setPlayers(player);
         if (sum === 100) {
-          player[whosTurn].status = 0;
+          player[whosTurn].status = 100;
           setPlayers(player);
           setGameOver((prev) => !prev);
           return;
@@ -153,7 +153,7 @@ const Board = () => {
           size={150}
           rollingTime={1000}
           onRoll={(value) => onRollDiceClick(value)}
-          disabled={false}
+          disabled={gameOver}
           defaultValue={1}
           cheatValue={Math.floor(1 + Math.random() * (7 - 1)) as any}
         />
